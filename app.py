@@ -15,9 +15,9 @@ def load_models():
         "Survival Status Model": {
             "model": joblib.load("models/survival_status_model.joblib")
         },
-        "Vital Status Model": {
-            "model": joblib.load("models/vital_status_model.joblib")
-        }
+        # "Vital Status Model": {
+        #     "model": joblib.load("models/vital_status_model.joblib")
+        # }
     }
     return models
 
@@ -27,7 +27,7 @@ models = load_models()
 # Streamlit Page Setup
 # -----------------------------
 st.set_page_config(page_title="Breast Cancer Prediction Suite", layout="wide")
-st.title("🎗️ Breast Cancer Multi-Model Prediction Suite")
+st.title(" Breast Cancer Multi-Model Prediction Suite")
 
 st.write(
     "This app predicts **molecular subtype**, **survival status**, and **vital status** "
@@ -45,13 +45,13 @@ model_choice = st.sidebar.selectbox(
 )
 
 selected_model_info = models[model_choice]
-st.markdown(f"### 🔬 Using **{model_choice}**")
+st.markdown(f"###  Using **{model_choice}**")
 st.info("Provide patient and tumor information below to get predictions. All models use the same input features.")
 
 # -----------------------------
 # Input Features
 # -----------------------------
-st.subheader("🧍 Patient & Tumor Information")
+st.subheader(" Patient & Tumor Information")
 
 col1, col2 = st.columns(2)
 
@@ -126,7 +126,7 @@ if st.button(" Predict"):
             elif "Basal" in pred_label:
                 st.warning("*Recommended Treatment:** Basal-like tumors are aggressive and need **combined chemotherapy and targeted systemic therapy** — surgery alone isn’t sufficient.")
             else:
-                st.info("*Note:** No specific treatment recommendation available for this subtype.")
+                st.info("*Recommened Treatment:** Sugery and Hormone therapy")
 
         # Survival Status Model
         elif model_choice == "Survival Status Model":
@@ -136,10 +136,10 @@ if st.button(" Predict"):
             st.success(f" **Predicted Survival Status:** {output}")
 
         # Vital Status Model
-        elif model_choice == "Vital Status Model":
-            model = selected_model_info["model"]
-            pred = model.predict(input_data)[0]
-            st.success(f" **Predicted Vital Status:** {pred}")
+        # elif model_choice == "Vital Status Model":
+        #     model = selected_model_info["model"]
+        #     pred = model.predict(input_data)[0]
+        #     st.success(f" **Predicted Vital Status:** {pred}")
 
     except Exception as e:
         st.error(f" Prediction error: {e}")
