@@ -1,4 +1,3 @@
-
 import streamlit as st
 import joblib
 import pandas as pd
@@ -16,9 +15,9 @@ def load_models():
         "Survival Status Model": {
             "model": joblib.load("models/survival_status_model.joblib")
         },
-        # "Vital Status Model": {
-        #     "model": joblib.load("models/vital_status_model.joblib")
-        # }
+        "Vital Status Model": {
+            "model": joblib.load("models/vital_status_model.joblib")
+        }
     }
     return models
 
@@ -28,10 +27,16 @@ models = load_models()
 # Streamlit Page Setup
 # -----------------------------
 st.set_page_config(page_title="Breast Cancer Prediction Suite", layout="wide")
-st.title("Breast Cancer Multi-Model Prediction Suite")
+st.title("🎗️ Breast Cancer Multi-Model Prediction Suite")
+
+st.write(
+    "This app predicts **molecular subtype**, **survival status**, and **vital status** "
+    "based on patient and tumor information. For molecular subtypes, you’ll also receive "
+    "**personalized treatment guidance.**"
+)
 
 # -----------------------------
-# Select Model
+# Model Selection
 # -----------------------------
 st.sidebar.header("Select Model")
 model_choice = st.sidebar.selectbox(
@@ -40,14 +45,13 @@ model_choice = st.sidebar.selectbox(
 )
 
 selected_model_info = models[model_choice]
-
-st.markdown(f"### Using **{model_choice}**")
-st.info("Provide patient information below to get predictions. All models use the same input features.")
+st.markdown(f"### 🔬 Using **{model_choice}**")
+st.info("Provide patient and tumor information below to get predictions. All models use the same input features.")
 
 # -----------------------------
-# Input Features (same for all models)
+# Input Features
 # -----------------------------
-st.subheader("Patient & Tumor Information")
+st.subheader("🧍 Patient & Tumor Information")
 
 col1, col2 = st.columns(2)
 
@@ -58,18 +62,18 @@ with col1:
     her2_status = st.selectbox("HER2 Status", ["Positive", "Negative"])
     grade = st.selectbox("Neoplasm Histologic Grade", ["Grade 1", "Grade 2", "Grade 3"])
     tmb = st.number_input("TMB (nonsynonymous)", 0.0, 1000.0, 10.0)
-    stage = st.selectbox("Tumor Stage", ["0","1", "2", "3", "4"])
+    stage = st.selectbox("Tumor Stage", ["0", "1", "2", "3", "4"])
 
 with col2:
     subtype_3gene = st.selectbox(
-        "3-Gene classifier subtype", 
+        "3-Gene classifier subtype",
         ["ER+/HER2- LOW PROLIF", "ER+/HER2- HIGH PROLIF", "ER-/HER2-", "HER2+"]
     )
     pr_status = st.selectbox("PR Status", ["Positive", "Negative"])
     lymph_nodes = st.number_input("Lymph nodes examined positive", 0, 50, 1)
     cluster = st.selectbox("Integrative Cluster", [str(i) for i in range(1, 11)])
     hormone_therapy = st.selectbox("Hormone Therapy", ["Yes", "No"])
-    npi = st.number_input("Nottingham prognostic index", 0.0, 10.0, 3.5)
+    npi = st.number_input("Nottingham Prognostic Index", 0.0, 10.0, 3.5)
     histologic_subtype = st.selectbox(
         "Tumor Other Histologic Subtype",
         ["Ductal", "Lobular", "Medullary", "Mucinous", "Tubular/Cribriform", "Mixed", "Other"]
@@ -98,10 +102,9 @@ input_dict = {
 input_data = pd.DataFrame.from_dict(input_dict)
 
 # -----------------------------
-# Prediction
+# Prediction & Treatment Guidance
 # -----------------------------
 if st.button(" Predict"):
-
     try:
         # Molecular Subtype Model
         if model_choice == "Molecular Subtype Model":
@@ -111,28 +114,33 @@ if st.button(" Predict"):
             pred_numeric = model.predict(input_data)[0]
             pred_label = le.inverse_transform([pred_numeric])[0]
 
-            st.success(f" Predicted Molecular Subtype: **{pred_label}**")
+            st.success(f" **Predicted Molecular Subtype:** {pred_label}")
+
+            # Personalized Treatment Guidance
+            if "LumA" in pred_label:
+                st.info("*Recommended Treatment:** Luminal A tumors respond best to **hormone therapy**.")
+            elif "LumB" in pred_label:
+                st.info("*Recommended Treatment:** Luminal B tumors respond best to **combined hormone and chemo-therapy**.")
+            elif "Her2" in pred_label:
+                st.info("*Recommended Treatment:** HER2-enriched tumors require **targeted therapy**, which significantly improve survival beyond surgery alone.")
+            elif "Basal" in pred_label:
+                st.warning("*Recommended Treatment:** Basal-like tumors are aggressive and need **combined chemotherapy and targeted systemic therapy** — surgery alone isn’t sufficient.")
+            else:
+                st.info("*Note:** No specific treatment recommendation available for this subtype.")
 
         # Survival Status Model
         elif model_choice == "Survival Status Model":
             model = selected_model_info["model"]
             pred = model.predict(input_data)[0]
-            if pred == 1:
-                output = "DECEASED"
-            else:
-                output = "LIVING"
-
-            st.success(f" Predicted Survival Status: **{output}**")
+            output = "DECEASED" if pred == 1 else "LIVING"
+            st.success(f" **Predicted Survival Status:** {output}")
 
         # Vital Status Model
-        # elif model_choice == "Vital Status Model":
-        #     model = selected_model_info["model"]
-        #     pred = model.predict(input_data)[0]
-        #     st.success(f" Predicted Vital Status: **{pred}**")
+        elif model_choice == "Vital Status Model":
+            model = selected_model_info["model"]
+            pred = model.predict(input_data)[0]
+            st.success(f" **Predicted Vital Status:** {pred}")
 
     except Exception as e:
         st.error(f" Prediction error: {e}")
         st.write(" Input preview:", input_data)
-
-
-
