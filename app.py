@@ -11,14 +11,14 @@ import numpy as np
 @st.cache_resource
 def load_models():
     models = {
-        "🩺Molecular Subtype Prediction": {
+        "Molecular Subtype Prediction": {
             "model": joblib.load("models/molecular_subtype_model.joblib"),
             "le": joblib.load("models/molecular_le.joblib")
         },
-        "💉Survival Status Prediction": {
+        "Survival Status Prediction": {
             "model": joblib.load("models/survival_status_model.joblib")
         },
-        "🩺Vital Status Prediction": {
+        "Vital Status Prediction": {
             "model": joblib.load("models/vital_status_model.joblib")
         }
     }
