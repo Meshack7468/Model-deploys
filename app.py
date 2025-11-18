@@ -137,19 +137,19 @@ if st.button("Predict"):
             st.success(f"Predicted Molecular Subtype: {pred_label}")
 
             # Treatment Guidance
-            if "LumA" in pred_label:
+            if "LUMA" in pred_label:
                 st.info("Recommended Treatment: Hormone therapy, Radiotherapy.")
-            elif "LumB" in pred_label:
-                st.info("Recommended Treatment: Hormone therapy, Radiotherapy, Chemotherapy.")
-            elif "Her2" in pred_label:
-                st.info("Recommended Treatment: Radiotherapy, Chemotherapy.")
-            elif "Basal" in pred_label:
+            elif "LUMB" in pred_label:
+                st.info("Recommended Treatment: Hormone therapy, Chemotherapy, Radiotherapy.")
+            elif "HER2" in pred_label:
+                st.info("Recommended Treatment: Chemotherapy, Radiotherapy.")
+            elif "BASAL" in pred_label:
                 st.warning("Recommended Treatment: Chemotherapy, Radiotherapy.")
-            elif "Claudin-low" in pred_label:
-                st.info("Recommended Treatment Radio therapy and Chemotherapy.")
+            elif "CLAUDIN-LOW" in pred_label:
+                st.info("Recommended Treatment: Chemotherapy, Radiotherapy.")
 
             else:
-                st.info("Recommended Treatment: Radio therapy and chemotherapy.")
+                st.info("Recommended Treatment: Radiotherapy and chemotherapy.")
 
         # -----------------------------
         # Survival Status Prediction
